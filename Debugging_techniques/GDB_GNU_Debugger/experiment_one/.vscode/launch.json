@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/my_program.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "C:/MinGW/bin/gdb.exe",  // Đảm bảo đường dẫn tới gdb.exe trong MinGW
+            "preLaunchTask": "build",
+            "serverStarted": "",
+            "filterStderr": true,
+            "filterStdout": true
+        }
+    ]
+}
