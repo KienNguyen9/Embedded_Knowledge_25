@@ -38,49 +38,49 @@ file ./binary
 ## 3. Basic commad-lines
 
 ### Set break point
-    ```Shell
+```Shell
     break {line number}
     break {function name}
-    ```
+```
 
 ### Delete break point
-    ```Shell
+```Shell
     delete {breakpoint number}
-    ```
+```
 ### View source at break point
-    ```shell
+```shell
     list
-    ```
+```
 
 ### Run next command line
-    ```shell
+```shell
     next {line number}
     next 
-    ```
+```
 
 ### Run inside the function body
-    ```shell
+```shell
     step
-    ```
+```
 
 ### Back to the top of function
-    ```shell
+```shell
     return    
-    ```
+```
 
 ### Continue execution until the next breakpoint or the end of program
-    ```shell
+```shell
     continue
-    ```
+```
 
 ### Manipulating variables  
-    ```shell
+```shell
     display {var name}
     print {var name}
     print &{var name}
     ptype {var name}
     set variable {var name} = {value}
-    ```
+```
 
 ## 4. Debug coredumper
 ### 4.1 The problems
