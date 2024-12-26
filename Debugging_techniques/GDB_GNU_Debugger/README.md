@@ -7,8 +7,8 @@ Nhưng đây là các giải pháp tối cổ, trừ khi muốn lấy thông tin
 
 # Install GDB
 
-'''SHELL
-sudo apt install -y gdb
-gdb --version
-'''
+"""SHELL
+    sudo apt install -y gdb
+    gdb --version
+"""
  
