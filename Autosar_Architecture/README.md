@@ -18,6 +18,7 @@ The layer of AutoSar
     - Compositions and Connectors
     - Runnables and Events
     - Application software Consolidated summary
+- MCAL Layer  
 - Autosar RTE Layer(Run-time environment)
     - RTE's API for Sender Reciver and Client-Server Interface\
     - RTE Layer Communication and Scheduling
@@ -25,3 +26,24 @@ The layer of AutoSar
 - Autosar methodologys 
 - Design an AutoSar software
 
+### 1.2 How  to approach Autosar 
+
+There are 3 theory:
+    1. BSW
+    2. ASW
+    3. RTE
+
+
+Demo: Implement
+    1. BSW (MCAL, ECU-Abstrection)
+    2. ASW
+    3. RTE
+
+### 1.3 Introduction to Autosar
+Autosar is an Automotive Open System Architecture, which was developed in 2003.
+
+Example, the engine control unit controls the vehicle injection, ignition extra.
+Likewise, there are many control units available in the vehicle, which will be calling it as ECUs
+
+The first, web site we can refer 
+`https://www.autosar.org/standards/classic-platform`
