@@ -65,7 +65,7 @@ About Autosar:
 
 ### 2.1 Base Software overview
 
-![alt text](/Images/three_biggest_layer.png)
+![alt text](.//Images//three_biggest_layer.png)
 
 The Autosar layered architecture is offering (cung cấp) all the mechanisms needed (các cơ chế cần thiết) for software and hardware independence (tính độc lập).
 It distinguishes (phân biệt) between three main software layers, which run on a microcontroller.
