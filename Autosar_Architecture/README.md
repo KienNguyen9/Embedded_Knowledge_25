@@ -87,3 +87,10 @@ It distinguishes (phân biệt) between three main software layers, which run on
 Note: 
 
 The main concept of standardised ECU SW achitecture is the separation of hardware independent application SW and  HW oriented BSW by means of a SW abstraction layer RTE
+RTE form a very clear separation here
+The upper side of the RTE is hardware independent, this abstraction layer enables the development of customer specific and competitive SW app without the HW dependency
+Futher characteristics of AR-SW Architecture, are the scalability of ECU SW for several car lines and variants.
+
+For example:
+    if a vihicle manufacturer has different variant of vehicles it is flexible enough to reuse this developed app SW across this vihicle ECU's since its HW independent.
+    Meaning a customer can spend at one time development cost to dev an app like parking assist system, and resuse it on different HW of all car variants
