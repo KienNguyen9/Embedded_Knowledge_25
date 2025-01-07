@@ -46,7 +46,7 @@ Example, the engine control unit controls the vehicle injection, ignition extra.
 Likewise, there are many control units available in the vehicle, which will be calling it as ECUs
 
 The first, web site we can refer 
-<!-- `https://www.autosar.org/standards/classic-platform` -->
+`https://www.autosar.org/standards/classic-platform`
 
 About Autosar:
 - 9 core partners (GM, Bosch, Toyoda, GM, BMW, Peugeot, VW, Ford, Daimler)
