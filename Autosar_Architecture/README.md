@@ -116,30 +116,50 @@ the `Service` layer, The `ECU abstraction` layer and the `microcontroller abstra
 1. The Applications Software layer is mostly hardware independent Communication between application softwares or the application to the basics software layer is only through RTE.
 2. The BSW is divided into three major layers and complex drivers. The three major layers consists of (bao gồm) services, ECU abstraction and microcontroller abstraction layer.
 
+-----
 
 - Basic software is the standardized software layer, which provides services to the software components.
+- BSW là lớp chuẩn hóa, nó cung cấp các dịch vụ tới các SW components
+
 - It does not fulfill any functional job and is situated below the runtime environment.
-- It contains standardized components and ECU specific components.
-- Components that are interfacing directly to the microcontroller are called the ECU specific components,
-- which is the operating system, microcontroller abstraction, layer and a complex device drivers.
-- The other BSW modules, like the Memory, Communications Services, etc. are called the standardized components
+- Nó không thực hiện công việc chức năng nào và nó nằm dưới lớp RTE
+
+- It contains `standardized components` and ECU's `specific components`.
+- Nó chứa các thành phần tiêu chuẩn và thành phần cụ thể cho ECU
+
+- Components that are interfacing directly to the microcontroller are called the ECU `specific components`,
+- Các thành phần giao tiếp trực tiếp với vi điều khiển gọi thành phần cụ thể 
+
+- which is the `operating system`, microcontroller abstraction `MCAL` layer and a complex `device drivers`.
+- Đó là `OS`, lớp MCAL và Complex divice driver
+
+- The other BSW modules, like the `Memory`, `Communications Services`, etc. are called the standardized components
+- Những modules khác như là Memory, các module giao tiếp,... được gọi là thành phần chuẩn hóa
+
+#### Microcontroller Abstraction Layer. 
 - The microcontroller abstraction layer is the lowest layer of the basic software.
+- Lớp MCAL là lớp thấp nhất trong BSW
 - It contains drivers with direct access to the microcontroller, internal peripherals and memory mapped microcontroller external devices.
-- Access to the microcontroller registers is routed through the microcontroller abstraction layer based on these driver's.
-- MCAL is a hardware specific layer that ensures a standard interface to the basic software.
-- It manages the microcontroller peripherals and provides the components of the basic software with microcontroller independent values.
+- Nó chứa các driver truy cập trực tiếp tới microcontroller, thiết bị ngoại vi bên trong vi điều khiển và ngoại vi bên ngoài được ánh xạ bộ nhớ đến VĐK
+- Access (truy cập) to the microcontroller registers is routed (định tuyến) through the microcontroller abstraction layer based on these driver's.
+- Nó truy cập tới thanh ghi VĐK được định tuyến thông qua MCAL dựa trên các drivers.
+- MCAL is a hardware specific layer that ensures (đảm bảo) a standard interface to the basic software.
+- It manages the microcontroller peripherals (ngoại vi) and provides the components of the basic software with microcontroller independent values.
 - MCAL implements notification mechanisms to support the distribution of commands, responses and information to process.
-- The microcontroller abstraction layer is subdivided into four parts.
-- IO drivers has the drivers for analog ADC, PWM, Digital IO etc.
-- The next is the communication drivers for easy on board, like SPI, I2C and vehicle communication like CAN and LIN.
-- The next is the memory drivers for On-Chip memory devices example internal flash, internal EEPROM and memory mapped external memory devices like External Flash.
-- Finally, the microcontroller drivers for Internal Peripherals example watchdog block unit and functions with direct access to microcontroller. 
-- Upper to the MCAL layer, next comes the ECU abstraction layer.
+The microcontroller abstraction layer is subdivided into four parts:
+1. IO drivers has the drivers for analog ADC, PWM, Digital IO etc.
+2. The communication drivers for easy on board, like SPI, I2C and vehicle communication like CAN and LIN.
+3. The memory drivers for On-Chip memory devices example internal flash, internal EEPROM and memory mapped external memory devices like External Flash.
+4. The microcontroller drivers for Internal Peripherals example watchdog block unit and functions with direct access to microcontroller. 
+##### Summary: 
+    - Là lớp thấp nhất của BSW, truy cập trực tiếp tới ngoại vị trong và ngoài, làm cho lớp trên nó độc lập với phần cứng
+
+#### The ECU abstraction layer.
 - The easy abstraction layer provides a software interface to the electrical values of any specific ECU in order to decouple higher level software from all underlying hardware dependencies.
 - They are further subdivided into IO hardware abstraction, communication abstraction, memory abstraction and on board device abstraction.
 - IO Hardware Abstraction is a group of modules which abstracts from the location of the peripheral IO devices like on-chip or on-board and the ECU hardware layout example, microcontroller pin connections and signal level inversions.
 - The task of this group of module's is to represent IO signals as they are connected to the ECU hardware.
-- Example current, voltage, frequency and to hide ECU hardware and Layout properties higher software layers 
+    Example current, voltage, frequency and to hide ECU hardware and Layout properties higher software layers 
 - The communication hardware Abstraction is a group of modules which abstracts from the location of communication controllers and the ECU hardware layout. 
 - For all communication systems, a specific communication hardware abstraction is required. For example for LIN, CAN, Flexray etc.
 - Let's consider an example where an ECU has a microcontroller with internal controls and an additional on board ASIC with 4 CAN controllers.
@@ -155,6 +175,12 @@ the `Service` layer, The `ECU abstraction` layer and the `microcontroller abstra
 - Those drivers access the ECU on both devices via the microcontroller abstraction layer.
 - The task of this group of module's is to abstract from ECU specific on board devices.
 - Upper to the abstraction layer comes the service layer that consists of three different parts.
+##### Summary: 
+    - Offer APIs to access internal or external peripherals
+    - Make higher layer independent of ECU Hardware
+
+#### Service Layer (Os service, Memory service, Com service)
+
 - Communication services, Memory services and systems services.
 - The communication services are a group of modules for vehicle network communication like CAN, LIN, Flexray and MOST.
 - They are interfacing with the communication drivers via the communication hardware abstraction.
@@ -168,6 +194,11 @@ the `Service` layer, The `ECU abstraction` layer and the `microcontroller abstra
 - Some of these services are microcontroller dependent, like the operating system.
 - ECU hardware are application dependent, like ECU state manager, diagnostic communication manager.
 - The task of this group of module's is to provide basic services for application and basic software modules.
+##### Summary: 
+    - Provices basic services to RTE and App layer
+    - Includes Os, Communication, Memory, Diagnostic services
+
+### Complex device driver:
 - The next is the complex device driver, which implements complex sensor and actuator control with direct access to the microcontroller using specific interrupts and to access complex microcontroller peripherals.
 - Its task is to fulfill the special functional and timing requirements for handling complex sensors and actuators like injection control, electrical valve control, etc..
 - Further, the complex device drivers will be used to implement drivers for hardware, which is not supported by Autosar
@@ -175,3 +206,7 @@ the `Service` layer, The `ECU abstraction` layer and the `microcontroller abstra
 - To enable the communication via this media, the driver will be implemented inside the complex device.
 - In case of a communication request via that media, the communication services will call the complex device driver instead of the communication hardware abstraction to communicate.
 - This is a summary of all the BMW modules that are available. 
+##### Summary: 
+    - Direct interaction-HW to RTE
+    - Used for high time constraint apps
+    - Cases which are not specified by AutoSar
