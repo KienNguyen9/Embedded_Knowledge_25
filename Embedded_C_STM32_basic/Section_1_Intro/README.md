@@ -42,3 +42,8 @@ So, it's not like you know a C and C++ have completely taken over the assembly l
 - I will be using the `C11` standard which is actually compiler default with some compiler extensions `gnu11`.
 - So, collectively (tóm lại) we call it as a gnu11
 
+- How to change the compiler settings to mention (đề cập đến) the 'C' standard?
+- Note that if you have written a code using C90 standard, then it will compile without any issues in C99 standard compilation, so that what we call is backward compatibility (tương thích ngược).
+- So but if you have written code using C99 standard specific features, then it may not compile successfully in C90 compilation.
+- You should keep this in mind.
+- But don't worry about this, just need set the standard in the compiler.
