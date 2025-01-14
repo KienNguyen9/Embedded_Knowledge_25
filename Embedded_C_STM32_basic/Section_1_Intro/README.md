@@ -36,4 +36,9 @@ So, it's not like you know a C and C++ have completely taken over the assembly l
 - So that's why, it is also called as `ANSI C` or `C89` or `C90` standard. 
 - So, the language underwent (trải qua) few more changes (like addition of new features, addition of new syntaxes, data types etc.) 
 - And newly updated standard was released in 1999 under the ISO tag : `ISO/IEC 9899:1999`
- 
+- this one, which is also called `C99` standard in short. 
+- In December 2011 ISO released new standard under this tag name `ISO/IEC 9899:2011`
+- Which is also called as `C11` standard. C11 supersedes (thay thế) the C99.
+- I will be using the `C11` standard which is actually compiler default with some compiler extensions `gnu11`.
+- So, collectively (tóm lại) we call it as a gnu11
+
