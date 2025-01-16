@@ -29,3 +29,14 @@
 ```SHELL
 install GCC
 ```
+
+
+## Hardware requirements
+1. Discovery kit with STM32F407VG MCU
+2. Breakboard
+3. Led
+4. Jumpper
+
+## Embedded Target
+1. So, in this lecture let's explore about the Embedded Target that is being used for this course.
+
