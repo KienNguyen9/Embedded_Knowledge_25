@@ -47,3 +47,4 @@ So, it's not like you know a C and C++ have completely taken over the assembly l
 - So but if you have written code using C99 standard specific features, then it may not compile successfully in C90 compilation.
 - You should keep this in mind.
 - But don't worry about this, just need set the standard in the compiler.
+- 
