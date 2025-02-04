@@ -1,4 +1,5 @@
 English in programming
+
 - All right. First let's learn some basics syntaxes related to usage of variables 
 - and some of the important standard library functions such as printf, scanf, and all. And for this I'll not be using the IDE
 - which I installed.
@@ -113,3 +114,13 @@ English in programming
 - So, you have to modify the program what we have just returned to print these messages.
 - So, just try to think how you can able to achieve this and you can use two printf statements, no problem.
 - So, just think how you can do this and I'll see you in the next lecture.
+
+### 22. Print exercise
+- So, printf actually never `causes` (khiến cho) cursor to move to the next line.
+- `unless` (trừ khi) you mention the printf to do that
+- let's give `couple of space` (một chút thời gian) here in order to `comprehend` (hiểu) this.
+- And after that, when the next printf is executed the printing is actually continued from there `onwards`(tiến lên)
+- So, that's the behavior a which you can notice from this code
+- so you have to use an `escape character`. And in 'C' the escape character is `backslash` (\).
+- So, now this is called as an `escape sequence` (chuỗi thoát). An escape sequence is collection of two characters. One is
+
