@@ -198,6 +198,81 @@ The microcontroller abstraction layer is subdivided into four parts:
     - Provices basic services to RTE and App layer
     - Includes Os, Communication, Memory, Diagnostic services
 
+
+
+### 2.2 Autosar interfaces
+
+#### 1. AUTOSAR Interface
+
+Định nghĩa: Đây là giao diện tổng quát (generic), được sinh ra dựa trên cấu hình (configuration).
+
+Được cung cấp bởi RTE (RunTime Environment).
+
+Mục đích: Làm cầu nối giữa:
+
+Application Software (ASW) ↔ Application Software khác
+
+Application Software (ASW) ↔ Base Software (BSW, như Hardware Abstraction Layer hoặc Complex Device Driver).
+
+Ví dụ:
+Một phần mềm ứng dụng muốn đọc tín hiệu cảm biến (input) hoặc ghi tín hiệu ra cơ cấu chấp hành (output). Nó sẽ gọi API được RTE sinh ra (theo config).
+→ Kiểu như:
+
+SensorValue = Rte_Read_SensorInput();
+Rte_Write_ActuatorOutput(Command);
+
+
+API này không viết tay mà được RTE tự động tạo từ file cấu hình.
+
+#### 2. Standardized AUTOSAR Interface
+
+Định nghĩa: Đây cũng là AUTOSAR Interface, nhưng là loại được tiêu chuẩn hóa sẵn trong AUTOSAR (không phải tự config ra).
+
+Dùng để: Application Software truy cập các dịch vụ chuẩn do các BSW module cung cấp (ở Service Layer).
+
+Ví dụ:
+
+ECU State Manager (ECU trạng thái: bật/tắt, sleep/wakeup).
+
+Diagnostic Manager (xử lý chẩn đoán lỗi).
+→ App software có thể gọi trực tiếp các service này thông qua standardized AUTOSAR interface mà không cần tự định nghĩa.
+
+#### 3. Standardized Interface
+
+Định nghĩa: Đây là các API viết bằng C đã được AUTOSAR định nghĩa sẵn, dùng để giao tiếp giữa:
+
+Các module BSW với nhau,
+
+RTE ↔ Hệ điều hành (OS),
+
+RTE ↔ BSW Communication Module.
+
+Ví dụ: Ở MCAL (Microcontroller Abstraction Layer), AUTOSAR đã định nghĩa sẵn hàm để đọc một chân IO:
+
+Dio_LevelType Dio_ReadChannel(Dio_ChannelType ChannelId);
+
+
+Đây là standardized interface vì nó đã có sẵn trong chuẩn AUTOSAR.
+
+Mục đích: Đảm bảo mọi vendor (Bosch, Continental, Valeo, …) đều viết driver theo API chuẩn này → Tạo tính tương thích.
+
+#### 🔑 Tóm lại (cho dễ nhớ):
+
+AUTOSAR Interface → Sinh ra từ config, kết nối App ↔ App hoặc App ↔ BSW.
+
+Standardized AUTOSAR Interface → Đã chuẩn hóa, cho App gọi dịch vụ BSW (như diagnostics, ECU manager).
+
+Standardized Interface → API C chuẩn, cho BSW ↔ BSW, hoặc RTE ↔ BSW/OS.
+
+#### 👉 Nói ngắn gọn:
+
+AUTOSAR Interface = linh hoạt, sinh ra từ config.
+
+Standardized AUTOSAR Interface = chuẩn, dành cho App ↔ Service Layer.
+
+Standardized Interface = API C chuẩn, dành cho BSW nội bộ hoặc RTE ↔ BSW.
+
+
 ### Complex device driver:
 - The next is the complex device driver, which implements complex sensor and actuator control with direct access to the microcontroller using specific interrupts and to access complex microcontroller peripherals.
 - Its task is to fulfill the special functional and timing requirements for handling complex sensors and actuators like injection control, electrical valve control, etc..
