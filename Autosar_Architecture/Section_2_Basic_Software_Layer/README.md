@@ -285,3 +285,232 @@ Standardized Interface = API C chuẩn, dành cho BSW nội bộ hoặc RTE ↔ 
     - Direct interaction-HW to RTE
     - Used for high time constraint apps
     - Cases which are not specified by AutoSar
+
+
+# 3. Software Components (SWC)
+## 3.1 Định nghĩa SWC
+1. Bắt đầu với yêu cầu
+
+“We have to get the vehicle speed from an external speed sensor. If the speed is more than a calibrated set point, then the following action should be taken. Cut off the injector immediately and stop the vehicle. Log an error through the diagnostics module. In parallel, the application should calculate the maximum speed that the vehicle was driven and save this data during shutdown. The same data should be restored to the application when the ECU is powered up in the next driving cycle.”
+
+👉 Yêu cầu:
+
+Đọc tốc độ từ sensor tốc độ xe.
+
+Nếu tốc độ vượt ngưỡng cài đặt → ngắt kim phun ngay (cắt nhiên liệu, dừng xe).
+
+Ghi lỗi qua module chẩn đoán.
+
+Tính tốc độ tối đa trong chu kỳ lái → lưu khi tắt máy, khôi phục khi bật ECU lại.
+
+2. Đầu vào từ cảm biến
+
+“Let's assume that the sensor input is already available on a digital IO pin of the controller. So now from the application point, we first need an ECU abstraction software component that can read the corresponding IO Pin and calculate the count information of the pulses that the speed sensor provides.”
+
+👉 Sensor tốc độ thường xuất xung (pulse).
+
+Tín hiệu này vào IO pin của MCU.
+
+Cần 1 ECU Abstraction SWC để đọc chân IO này, chuyển xung → thông tin đếm (pulse count).
+
+Lý do: Application không được phép đọc trực tiếp IO, mà phải qua abstraction.
+
+3. Xử lý sensor
+
+“we introduce a sensor actuator software component here to interact with the ECU abstraction layer and get the sensor pulses. The sensor actuators software component further calculates the speed … in different units.”
+
+👉 Tiếp theo:
+
+Sensor/Actuator SWC lấy dữ liệu pulse từ ECU Abstraction.
+
+Thực hiện tính toán: số xung → tốc độ (km/h, mph…).
+
+Cung cấp giá trị tốc độ đã xử lý cho Application SWC.
+
+4. Logic ứng dụng chính
+
+“we need an application software component to perform the core logic … cut off the engine when it crosses a particular speed.”
+
+👉 Tạo Application SWC:
+
+Nhận dữ liệu tốc độ từ Sensor SWC.
+
+So sánh với giá trị ngưỡng (calibration).
+
+Nếu vượt → gửi lệnh ngắt kim phun.
+
+5. Calibration parameter
+
+“we need a calibration parameter software component … to decide the high speed cutoff value, and this must be tune-able during production.”
+
+👉 Cần thêm Calibration Parameter SWC:
+
+Giữ giá trị ngưỡng tốc độ.
+
+Có thể thay đổi (tuning) khi hiệu chỉnh xe ở nhà máy.
+
+6. Ngắt kim phun ngay lập tức
+
+“Hence, we introduce a complex device driver to make the cutoff operation faster … set the corresponding IO Pins of the controller, so the injector is immediately cut off.”
+
+👉 Vì thao tác ngắt kim phun phải cực nhanh (không delay):
+
+Dùng Complex Device Driver (CDD).
+
+Application SWC → gửi lệnh cho CDD → CDD trực tiếp điều khiển IO pin → ngắt kim phun.
+
+7. Ghi lỗi chẩn đoán
+
+“we would need the help of the base software diagnostic manager … we introduce a BSW service software component for diagnostics.”
+
+👉 Khi vượt tốc → phải log lỗi.
+
+Application SWC gửi thông tin đến Diagnostic Service SWC (thuộc BSW).
+
+Diagnostic Manager xử lý việc lưu, báo cáo lỗi.
+
+8. Lưu tốc độ tối đa
+
+“we introduce a NVBlock software component … which further gets the data from the application software component and passes on to the NVM manager … handled from the BSW layers like the memory abstraction layer.”
+
+👉 Ứng dụng phải lưu tốc độ tối đa (trong chu kỳ lái).
+
+Dùng NV Block SWC để tạo vùng nhớ không mất (NVM).
+
+NV Block SWC chuyển dữ liệu đến NVM Manager (thuộc BSW).
+
+ECU có Flash ngoài → Memory Abstraction Layer của BSW xử lý lưu vào đó.
+
+Khi khởi động lại → NVM Manager tự động khôi phục dữ liệu, trả về Application SWC.
+
+9. Kết luận
+
+“Hope it was clear on how to choose the right software components for our application.”
+
+👉 Qua ví dụ, ta đã chọn đủ loại SWC cần thiết:
+
+ECU Abstraction SWC → đọc IO.
+
+Sensor/Actuator SWC → tính tốc độ.
+
+Application SWC → core logic.
+
+Calibration SWC → ngưỡng tốc độ.
+
+CDD → ngắt kim phun ngay.
+
+Diagnostic SWC → ghi lỗi.
+
+NV Block SWC → lưu tốc độ tối đa.
+
+
+# 4 Ports and Port Interfaces
+1. Khái niệm Port
+
+“Ports are the connecting points for communication … They are responsible for carrying information across the components.”
+
+👉 Port giống như cổng kết nối để các SWC trao đổi dữ liệu với nhau.
+
+Không có port thì SWC không giao tiếp được.
+
+Mỗi port phải có một interface để quy định nó truyền cái gì và truyền như thế nào.
+
+2. Các loại Port
+
+“three possible Port types: P-Port, R-Port, PR-Port”
+
+P-Port (Provider Port): nơi cung cấp thông tin. Ví dụ: Sensor SWC có P-Port để xuất dữ liệu tốc độ.
+
+R-Port (Receiver Port): nơi nhận thông tin. Ví dụ: Application SWC có R-Port để nhận dữ liệu tốc độ.
+
+PR-Port (Provider-Receiver Port): vừa cung cấp vừa nhận dữ liệu cùng một loại. Ít dùng hơn, nhưng có khi cần trao đổi 2 chiều.
+
+👉 Hiểu đơn giản:
+
+P = phát,
+
+R = thu,
+
+PR = vừa phát vừa thu.
+
+3. Các loại Interface
+
+“On what kind of information is actually carried … defined by the port interfaces.”
+
+AUTOSAR quy định 6 loại interface.
+
+a) Sender-Receiver Interface
+
+Dùng để trao đổi dữ liệu (giống như truyền biến).
+
+Dữ liệu có thể là kiểu cơ bản (int, float, bool) hoặc phức tạp (struct, array).
+
+Muốn gửi → SWC cần có P-Port với SR interface.
+
+Muốn nhận → SWC cần có R-Port với SR interface.
+📌 Đây là loại phổ biến nhất.
+Ví dụ: Sensor SWC (P-Port) → Application SWC (R-Port).
+
+b) Client-Server Interface
+
+Dùng khi một SWC gọi hàm của SWC khác.
+
+Giống cơ chế Remote Function Call.
+
+Server = SWC sở hữu hàm (Provider Port).
+
+Client = SWC cần gọi hàm (Receiver Port).
+📌 Cũng rất phổ biến, thường dùng khi cần cung cấp dịch vụ/hàm.
+Ví dụ: Application SWC gọi hàm GetDiagnosticStatus() từ Diagnostic SWC.
+
+c) NV Data Interface
+
+Dùng cho dữ liệu Non-Volatile (không mất khi tắt máy).
+
+Chủ yếu dùng bởi NV Block SWC để giao tiếp với NVM Manager.
+Ví dụ:
+
+Application SWC (P-Port) ghi dữ liệu tốc độ tối đa → NV Block SWC (R-Port).
+
+Khi khôi phục → NV Block SWC (P-Port) → Application SWC (R-Port).
+
+d) Parameter Interface
+
+Dùng để chia sẻ tham số hiệu chỉnh (calibration).
+
+Thường dữ liệu này là hằng số hoặc chỉ chỉnh khi production, không thay đổi lúc runtime.
+Ví dụ: Calibration SWC cung cấp giá trị “giới hạn tốc độ” cho Application SWC.
+
+e) Mode Switch Interface
+
+Dùng khi hệ thống có các trạng thái (modes) đã định nghĩa trước.
+
+Ví dụ: Đèn xe có chế độ OFF / Low Beam / High Beam.
+
+SWC quyết định mode → P-Port.
+
+SWC sử dụng mode để hành động → R-Port.
+
+f) Trigger Interface
+
+Dùng để kích hoạt một hành động khi có sự kiện xảy ra.
+
+Ví dụ: Một SWC quyết định trigger → P-Port.
+
+SWC khác có hành động cần trigger → R-Port.
+
+Chỉ khi có sự kiện, hành động mới chạy.
+
+4. Kết luận
+
+Có 3 loại Port: P, R, PR.
+
+Có 6 loại Interface: SR, CS, NV, Parameter, Mode Switch, Trigger.
+
+Trong thực tế dự án:
+
+Sender-Receiver và Client-Server là quan trọng nhất (chiếm 80–90%).
+
+Các loại khác dùng cho tình huống đặc biệt (NVM, Calibration, Mode, Trigger).
+
+👉 Tóm lại: Port + Interface = Ngôn ngữ giao tiếp giữa các SWC.
