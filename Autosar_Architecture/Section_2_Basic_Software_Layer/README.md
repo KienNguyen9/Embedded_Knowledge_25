@@ -514,3 +514,208 @@ Sender-Receiver và Client-Server là quan trọng nhất (chiếm 80–90%).
 Các loại khác dùng cho tình huống đặc biệt (NVM, Calibration, Mode, Trigger).
 
 👉 Tóm lại: Port + Interface = Ngôn ngữ giao tiếp giữa các SWC.
+
+
+# 5. Compositions - Connectors
+1. "Composition is a software component type that clusters or aggregates other software components or compositions"
+👉 Composition là một loại Software Component dùng để gom nhóm hoặc kết hợp nhiều Software Component hoặc nhiều Composition khác.
+→ Nghĩa là Composition = “container” có thể chứa SWC hoặc cả Composition lồng nhau.
+
+2. "In simple terms, a composition could be understood as a container that can hold a group of software components."
+👉 Nói đơn giản, Composition giống như cái hộp, trong đó có thể chứa một nhóm các Software Component.
+
+3. "Now the connectors"
+👉 Giờ ta nói về connector – các “dây nối” giữa các thành phần.
+
+4. "We have been seeing from the last examples that communication is established through ports and data is passed from the provider port to the receiver port."
+👉 Ở các ví dụ trước, ta thấy việc giao tiếp được thực hiện qua port: dữ liệu đi từ provider port đến receiver port.
+
+5. "In a live system, you might have thousands of provider ports and receiver ports and who's connected with whom is decided from the connector configuration."
+👉 Trong hệ thống thực tế có thể có hàng ngàn provider và receiver port. Việc port nào nối với port nào được quyết định bởi cấu hình connector.
+
+6. "A connector can be of either one of these three types assembly connector, delegation connector and Pass through Connector."
+👉 Có 3 loại connector: Assembly, Delegation, và Pass-through.
+
+7. "We shall see how to use these connectors with an example."
+👉 Ta sẽ xem ví dụ để hiểu cách dùng từng loại connector.
+
+8. "Let's take two software components that has a sender receiver and a client server communication with the two provider and two receiver ports."
+👉 Giả sử có 2 SWC, mỗi SWC có cả sender-receiver và client-server với 2 provider port và 2 receiver port.
+
+9. "And we shall place them under a composition called Composition One."
+👉 Ta đặt 2 SWC này vào trong một Composition gọi là Composition 1.
+
+10. "To connect these two ports, we can use a simple assembly connector."
+👉 Để nối các port này, ta dùng assembly connector.
+
+11. "An assembly connector is used to connect to ports within the same composition."
+👉 Assembly connector chỉ dùng để nối port trong cùng một composition.
+
+12. "This is the assembly configuration will look like."
+👉 Đây là cách cấu hình assembly connector trong file ARXML.
+
+13. "An Assembly connector will find a provider and a receiver port within it."
+👉 Assembly connector sẽ kết nối 1 provider port với 1 receiver port.
+
+14. "Above in the configuration, we could see the composition software component for composition one created, and this encapsulate these two Software components, SWC 1 and SWC 2."
+👉 Trong cấu hình, Composition 1 được tạo ra và bao bên trong nó có SWC1 và SWC2.
+
+15. "Let's consider we have another component in the system called software component 3, and this is placed within a new composition called Composition 2."
+👉 Giả sử ta có thêm SWC3, đặt trong một Composition khác gọi là Composition 2.
+
+16. "If you have a closer look, we could notice that composition 2 encapsulates composition 1 as well, like defined a composition, can have both components and compositions."
+👉 Nhìn kỹ, Composition 2 có thể chứa Composition 1. Nghĩa là composition có thể lồng nhau: chứa SWC hoặc chứa cả composition khác.
+
+17. "Again, the same example. We have two ports from software Component 3 to be connected to component 1 and component 2."
+👉 Trong ví dụ, SWC3 cần kết nối port với SWC1 và SWC2.
+
+18. "We can't make a direct assembly connection here since both as different parent composition's."
+👉 Nhưng không thể nối trực tiếp bằng assembly connector, vì SWC3 thuộc Composition 2, còn SWC1 & SWC2 thuộc Composition 1 → khác parent composition.
+
+19. "The rule for using an assembly connector is that, the ports to be connected from software components should have the same parent composition."
+👉 Quy tắc: Assembly connector chỉ nối được các port nếu chúng cùng một parent composition.
+
+20. "From our example, the parents of the Component 1 and software component 2 are Composition 1, software component three's parent is Composition 2 and hence an assembly cannot be used here."
+👉 Trong ví dụ: SWC1 & SWC2 có parent là Composition 1, SWC3 có parent là Composition 2 → không thể dùng assembly connector trực tiếp.
+
+21. "To do this will have to extend the existing ports to the outer composition using delegation Connector's."
+👉 Để kết nối, ta phải đưa port của SWC1 & SWC2 ra ngoài Composition 1 bằng delegation connector.
+
+22. "So component 1 and 2 have their ports extended to the composition using a delegation connector and now composition 1 has these ports defined in it."
+👉 Khi đó, Composition 1 sẽ có các “mirror port” tương ứng, nhờ delegation connector.
+
+23. "A sample configuration on how it looks like the configuration file is here."
+👉 Đây là ví dụ trong file cấu hình.
+
+24. "A delegation connector extends the inner port from the components to the outer composition."
+👉 Delegation connector dùng để mang port của SWC bên trong ra composition cha.
+
+25. "A new mirror port is also created on the outer composition and the delegation connector connects this outer port to the inner port of the component."
+👉 Khi đó, một “mirror port” được tạo trong composition cha, và delegation connector sẽ nối nó với port bên trong SWC.
+
+26. "Let's look again now if the connection is possible."
+👉 Giờ ta kiểm tra lại xem có thể kết nối chưa.
+
+27. "The opposite connecting ports of the software component 3 are now available within the same parent, and we can now have an assembly connector between composition 1 and software component 3."
+👉 Lúc này, nhờ delegation, port của SWC1 & SWC2 đã “lộ ra ngoài” trong Composition 1 → giờ chúng cùng parent với SWC3 (Composition 2) → ta có thể nối bằng assembly connector.
+
+28. "The connection is complete now."
+👉 Kết nối đã hoàn tất.
+
+29. "An additional difference between these two connectors are that an assembly connector connects a provider and a receive port, but a delegation connector connects the same port, either provider to provider or receiver to receiver."
+👉 Điểm khác biệt:
+
+Assembly nối Provider ↔ Receiver.
+
+Delegation nối Provider ↔ Provider hoặc Receiver ↔ Receiver (chỉ “phản chiếu” port ra ngoài).
+
+30. "Every port connection should finally end with an assembly connector configuration."
+👉 Tất cả kết nối cuối cùng đều phải được “kết thúc” bằng một assembly connector.
+
+31. "Hope it's clear on when to use an assembly or a delegation connector."
+👉 Hy vọng đã rõ khi nào dùng assembly, khi nào dùng delegation.
+
+👉 Tóm ngắn:
+
+Composition = cái hộp chứa SWC hoặc composition khác.
+
+Assembly connector = nối Provider ↔ Receiver, nhưng phải cùng parent composition.
+
+Delegation connector = đưa port từ SWC ra composition cha, tạo mirror port, để cuối cùng vẫn có thể dùng assembly.
+
+Mọi kết nối luôn kết thúc bằng assembly connector.
+
+
+# 6. Runables and Events
+1. Khái niệm Runnable
+
+"Runnables or runnable entities are the smallest fragments of code that's defined on a component."
+👉 Runnable là đơn vị code nhỏ nhất trong 1 SWC.
+→ Nó chính là hàm (function) trong file C mà AUTOSAR RTE có thể gọi.
+
+"Each function on the C file will have to be defined as Runnable in the Autosar configuration, and it should further specify the interface access within it."
+👉 Mỗi hàm trong C file cần được định nghĩa thành Runnable trong ARXML (configuration), đồng thời mô tả nó truy cập port/interface nào (đọc/ghi dữ liệu gì).
+
+"Runnable entities together with events configured are scheduled by the operating system."
+👉 RTE + OS sẽ gọi Runnable dựa trên Event (VD: khi có data, khi timer kích hoạt).
+
+2. Một số quy tắc
+
+"A composition software component or a parameter software component cannot have a runnable since they don't have an associated C file."
+👉 Composition SWC hoặc Parameter SWC không có Runnable, vì bản chất chúng không chứa code (chỉ là container hoặc parameter).
+
+3. Ví dụ
+
+C file có 4 hàm: Sum(), Difference(), Multiplication(), Division().
+👉 Mỗi hàm này được coi là 1 Runnable.
+Trong ARXML phải định nghĩa 4 runnable entity tương ứng.
+
+Trong config, Runnable Entity sẽ chứa:
+
+DataReadAccess → đọc từ các Receiver port.
+
+DataWriteAccess → ghi ra Provider port.
+
+Symbol → tên function trong C code (Sum, Difference…).
+
+4. Cách giao tiếp (Explicit vs Implicit)
+
+Explicit Communication: dữ liệu truyền thẳng giữa Sender/Receiver. Không đảm bảo tính nhất quán (consistency).
+
+Implicit Communication: RTE tạo buffer riêng cho từng receiver, đảm bảo mỗi receiver nhận dữ liệu nhất quán.
+
+👉 Trong config:
+
+DataReadAccess / DataWriteAccess → implicit.
+
+DataReceivedByArgument / Value → explicit.
+
+DataSendPoint → queued communication (dùng queue).
+
+5. Các loại access khác trong Runnable
+
+Parameter Access: chỉ đọc Calibration Parameter.
+
+Mode Access / Mode Switch Point:
+
+Nếu Runnable đọc mode → Mode Access Point.
+
+Nếu Runnable set mode → Mode Switch Point.
+
+Local Variable Access (IRV – Inter Runnable Variable):
+
+Đọc/Ghi biến nội bộ trong SWC.
+
+Không qua port, chỉ có scope trong component.
+
+Client-Server Access:
+
+Nếu gọi server đồng bộ → SynchronousServerCallPoint.
+
+Nếu gọi server bất đồng bộ → AsynchronousServerCallPoint + ResultPoint.
+
+Triggers:
+
+Có thể là trigger nội bộ hoặc từ ngoài, gắn với Trigger Port.
+
+6. Thuộc tính chung của Runnable
+
+Can be concurrent → cho phép Runnable chạy song song hay không.
+
+Symbol → phải khớp với tên hàm trong C code, để RTE/OS biết gọi đúng function.
+
+7. Kết luận
+
+Runnable config phải mô tả:
+
+Tên hàm (Symbol).
+
+Port/Interface mà nó đọc/ghi.
+
+Kiểu giao tiếp (implicit, explicit, queued).
+
+Các loại access khác (Parameter, Mode, IRV, Client-Server, Trigger).
+
+Thuộc tính runtime (concurrent, scheduling event…).
+
+👉 Nói ngắn gọn: Runnable = function trong SWC mà AUTOSAR RTE có thể gọi → và config Runnable chính là “map” giữa function trong code với các port/interface + cách OS sẽ trigger nó.
