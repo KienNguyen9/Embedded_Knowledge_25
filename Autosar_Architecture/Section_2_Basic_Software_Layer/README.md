@@ -627,95 +627,221 @@ Mọi kết nối luôn kết thúc bằng assembly connector.
 
 
 # 6. Runables and Events
-1. Khái niệm Runnable
+## 1. Khái niệm Runnable
 
-"Runnables or runnable entities are the smallest fragments of code that's defined on a component."
-👉 Runnable là đơn vị code nhỏ nhất trong 1 SWC.
-→ Nó chính là hàm (function) trong file C mà AUTOSAR RTE có thể gọi.
+[Câu gốc]: "Runnables or runnable entities are the smallest fragments of code that's defined on a component."
+[Dịch]: Runnables hay thực thể runnable là những mảnh code nhỏ nhất được định nghĩa trong một component.
+[Giải thích]: Trong AUTOSAR, Runnable chính là đơn vị thực thi nhỏ nhất mà RTE có thể gọi. Nó thường là một hàm C trong SWC. Mỗi logic xử lý (VD: tính toán, xử lý tín hiệu sensor) đều phải nằm trong một runnable để RTE quản lý.
 
-"Each function on the C file will have to be defined as Runnable in the Autosar configuration, and it should further specify the interface access within it."
-👉 Mỗi hàm trong C file cần được định nghĩa thành Runnable trong ARXML (configuration), đồng thời mô tả nó truy cập port/interface nào (đọc/ghi dữ liệu gì).
+[Câu gốc]: "In simple terms, they can be said as individual functions that are on a software component."
+[Dịch]: Nói đơn giản, runnable có thể coi như các hàm riêng lẻ trong một software component.
+[Giải thích]: Nếu bạn viết code C cho SWC, mỗi hàm đều phải được ánh xạ thành một runnable. RTE không gọi trực tiếp function trong code mà gọi thông qua runnable đã được cấu hình trong ARXML.
 
-"Runnable entities together with events configured are scheduled by the operating system."
-👉 RTE + OS sẽ gọi Runnable dựa trên Event (VD: khi có data, khi timer kích hoạt).
+[Câu gốc]: "Each function on the C file will have to be defined as Runnable in the Autosar configuration, and it should further specify the interface access within it."
+[Dịch]: Mỗi hàm trong file C phải được định nghĩa như một runnable trong cấu hình AUTOSAR, đồng thời chỉ rõ các interface mà nó truy cập.
+[Giải thích]: Nghĩa là trong file ARXML, bạn phải khai báo runnable trùng tên với function trong C, và chỉ rõ nó đọc/ghi port nào (Sender/Receiver, Client/Server, Mode, Parameter...). Đây là cách AUTOSAR ràng buộc code với kiến trúc.
 
-2. Một số quy tắc
+[Câu gốc]: "Runnable entities together with events configured are scheduled by the operating system."
+[Dịch]: Các runnable cùng với các event được cấu hình sẽ được hệ điều hành lập lịch thực thi.
+[Giải thích]: Runnable không tự chạy, mà được OS + RTE gọi khi có sự kiện (event trigger). Event có thể là periodic timer, data received, mode switch... Đây là cách AUTOSAR quản lý tính thời gian thực.
 
-"A composition software component or a parameter software component cannot have a runnable since they don't have an associated C file."
-👉 Composition SWC hoặc Parameter SWC không có Runnable, vì bản chất chúng không chứa code (chỉ là container hoặc parameter).
+2. Quy tắc đặc biệt
 
-3. Ví dụ
+[Câu gốc]: "A composition software component or a parameter software component cannot have a runnable since they don't have an associated C file functionality within them."
+[Dịch]: Composition SWC hoặc Parameter SWC không thể có runnable vì chúng không có chức năng gắn với file C.
+[Giải thích]:
 
-C file có 4 hàm: Sum(), Difference(), Multiplication(), Division().
-👉 Mỗi hàm này được coi là 1 Runnable.
-Trong ARXML phải định nghĩa 4 runnable entity tương ứng.
+Composition SWC chỉ là container chứa SWC khác.
 
-Trong config, Runnable Entity sẽ chứa:
+Parameter SWC chỉ chứa tham số hiệu chỉnh (calibration).
+👉 Vì chúng không sinh ra file code, nên không thể có runnable (chỉ Atomic SWC mới có runnable).
 
-DataReadAccess → đọc từ các Receiver port.
+3. Ví dụ minh họa
 
-DataWriteAccess → ghi ra Provider port.
+[Câu gốc]: "For example, we have an Autosar C file like this that defines 4 set of functions 'Sum, difference, multiplication and division'."
+[Dịch]: Ví dụ, ta có một file C của AUTOSAR định nghĩa 4 hàm: Cộng, Trừ, Nhân và Chia.
+[Giải thích]: Đây là case đơn giản để minh họa. Trong AUTOSAR, 4 hàm này sẽ được coi là 4 Runnable Entities.
 
-Symbol → tên function trong C code (Sum, Difference…).
+[Câu gốc]: "Here these four functions are considered as runnables and will have to define a runnable configuration for all these four."
+[Dịch]: Bốn hàm này được coi là runnable và phải định nghĩa runnable configuration cho cả bốn.
+[Giải thích]: Trong ARXML, bạn phải tạo 4 <RunnableEntity> tương ứng với 4 hàm này. Nếu không, RTE sẽ không biết đến các hàm để gọi.
 
-4. Cách giao tiếp (Explicit vs Implicit)
+4. Cách cấu hình
 
-Explicit Communication: dữ liệu truyền thẳng giữa Sender/Receiver. Không đảm bảo tính nhất quán (consistency).
+[Câu gốc]: "The runnable definition in the configuration should also contain the interfaces or ports that are accessed inside."
+[Dịch]: Định nghĩa runnable trong cấu hình cũng phải chứa các interface hoặc port được truy cập bên trong.
+[Giải thích]: VD: Sum() đọc 2 giá trị X, Y từ ReceiverPort và ghi kết quả ra ProviderPort → config runnable phải ghi rõ DataReadAccess và DataWriteAccess.
 
-Implicit Communication: RTE tạo buffer riêng cho từng receiver, đảm bảo mỗi receiver nhận dữ liệu nhất quán.
+[Câu gốc]: "The symbol tag that's mentioned from a Runnable entity is quite important as it defines the exact name of the function that's used in the C file."
+[Dịch]: Tag “Symbol” trong runnable rất quan trọng vì nó định nghĩa chính xác tên của hàm trong file C.
+[Giải thích]: Nếu ARXML ghi Symbol = Sum, nhưng trong code hàm tên SUM() hoặc addNumbers() thì compile sẽ lỗi. Symbol phải khớp 1:1 với tên hàm trong code để RTE gọi được.
 
-👉 Trong config:
+5. Các loại truy cập dữ liệu
 
-DataReadAccess / DataWriteAccess → implicit.
+[Câu gốc]: "Explicit communication means the data that's passing over ports are sent and received as it is... The other one is implicit access..."
+[Dịch]:
 
-DataReceivedByArgument / Value → explicit.
+Explicit communication: dữ liệu truyền qua port được gửi/nhận trực tiếp, không đảm bảo tính nhất quán.
 
-DataSendPoint → queued communication (dùng queue).
+Implicit communication: RTE tạo buffer cho mỗi receiver để đảm bảo dữ liệu nhất quán.
+[Giải thích]:
 
-5. Các loại access khác trong Runnable
+Explicit: nhanh hơn nhưng nguy cơ receiver đọc trúng data “chưa hoàn chỉnh”.
 
-Parameter Access: chỉ đọc Calibration Parameter.
+Implicit: an toàn, mỗi receiver có bản copy riêng. Trong real-time system, implicit thường dùng nhiều hơn để đảm bảo data consistency.
 
-Mode Access / Mode Switch Point:
+6. Các access khác
 
-Nếu Runnable đọc mode → Mode Access Point.
+Parameter Access → chỉ đọc calibration parameter.
 
-Nếu Runnable set mode → Mode Switch Point.
+Mode Access / Switch → đọc hoặc set trạng thái hệ thống.
 
-Local Variable Access (IRV – Inter Runnable Variable):
+Local Variables (IRV) → biến nội bộ trong SWC, chỉ chia sẻ giữa các runnable.
 
-Đọc/Ghi biến nội bộ trong SWC.
+Client-Server Access → gọi hàm server (Sync/Async).
 
-Không qua port, chỉ có scope trong component.
+Trigger Access → runnable kích hoạt bởi trigger port.
 
-Client-Server Access:
+7. Thuộc tính chung
 
-Nếu gọi server đồng bộ → SynchronousServerCallPoint.
+[Câu gốc]: "Can be in concurrently option... The next one is the 'Symbol' tag..."
+[Dịch]:
 
-Nếu gọi server bất đồng bộ → AsynchronousServerCallPoint + ResultPoint.
+“Can be concurrent”: cho phép runnable chạy song song (True/False).
 
-Triggers:
+“Symbol”: tên hàm trong C, phải trùng khớp.
+[Giải thích]:
 
-Có thể là trigger nội bộ hoặc từ ngoài, gắn với Trigger Port.
+Nếu runnable không an toàn khi chạy song song (VD: truy cập global variable), thì CanBeConcurrent = False.
 
-6. Thuộc tính chung của Runnable
+Nếu muốn OS chạy đa luồng runnable này → True.
 
-Can be concurrent → cho phép Runnable chạy song song hay không.
+👉 Kết luận: Runnable = function trong SWC mà RTE có thể gọi. Config runnable = map function trong code ↔ port/interface ↔ event/scheduling rule.
 
-Symbol → phải khớp với tên hàm trong C code, để RTE/OS biết gọi đúng function.
 
-7. Kết luận
+## 2. Event
+1. [Câu gốc]
 
-Runnable config phải mô tả:
+"Events are additional configuration to Runnable that specifies the operating system on how to call or schedule a Runnable."
 
-Tên hàm (Symbol).
+[Dịch sang tiếng Việt]
+Sự kiện (Events) là cấu hình bổ sung cho Runnable, quy định cho hệ điều hành cách gọi hoặc lập lịch (schedule) một Runnable.
 
-Port/Interface mà nó đọc/ghi.
+[Giải thích như chuyên gia top 1%]
+Trong AUTOSAR, bản thân Runnable chỉ định nghĩa “cái gì cần chạy”. Nhưng Events mới là cái “khi nào chạy”. Chúng đóng vai trò như một bộ điều kiện để HĐH và RTE biết khi nào cần kích hoạt Runnable.
 
-Kiểu giao tiếp (implicit, explicit, queued).
+1. [Câu gốc]
 
-Các loại access khác (Parameter, Mode, IRV, Client-Server, Trigger).
+"Runnables are mapped to the RTE events and further the operating system and the RTE layer together ensure that the runnable function is called in an expected manner."
 
-Thuộc tính runtime (concurrent, scheduling event…).
+[Dịch sang tiếng Việt]
+Runnable được ánh xạ (map) với các sự kiện RTE. Hệ điều hành và tầng RTE cùng nhau đảm bảo rằng hàm runnable được gọi đúng như mong đợi.
 
-👉 Nói ngắn gọn: Runnable = function trong SWC mà AUTOSAR RTE có thể gọi → và config Runnable chính là “map” giữa function trong code với các port/interface + cách OS sẽ trigger nó.
+[Giải thích như chuyên gia top 1%]
+Runnable không tự chạy, nó phải được gắn (bind) với một RTE Event. Khi sự kiện này xảy ra, OS + RTE sẽ phối hợp gọi đúng hàm C tương ứng. Điều này đảm bảo tính deterministic (tính xác định) của hệ thống.
+
+1. [Câu gốc]
+
+"Init event is used to specify that a Runnable is meant to be called only once and the Runnable is just for initialization of the software during startup."
+
+[Dịch sang tiếng Việt]
+Sự kiện Init được dùng để quy định rằng Runnable chỉ chạy một lần duy nhất, thường để khởi tạo phần mềm trong giai đoạn khởi động.
+
+[Giải thích như chuyên gia top 1%]
+Đây chính là “constructor” ở cấp AUTOSAR. Ví dụ: mở cổng CAN, thiết lập biến trạng thái ban đầu. Sau khi chạy Init, Runnable này sẽ không được gọi lại nữa.
+
+1. [Câu gốc]
+
+"Timing events are used when we need the operating system to call the runnables in a timing period."
+
+[Dịch sang tiếng Việt]
+Sự kiện định kỳ (Timing Event) được dùng khi cần HĐH gọi Runnable theo một chu kỳ thời gian cố định.
+
+[Giải thích như chuyên gia top 1%]
+Timing Event = “scheduler tick”. Ví dụ: mỗi 100ms đọc cảm biến, hoặc mỗi 10ms cập nhật thuật toán điều khiển. Nó bảo đảm tính real-time periodic execution.
+
+1. [Câu gốc]
+
+"Trigger events are used in case a Runnable has to be triggered only when a trigger event occurs."
+
+[Dịch sang tiếng Việt]
+Sự kiện Trigger được dùng khi một Runnable chỉ chạy khi có tín hiệu kích hoạt xảy ra.
+
+[Giải thích như chuyên gia top 1%]
+Khác với Timing (chu kỳ đều đặn), Trigger Event phụ thuộc vào tín hiệu bên ngoài (ví dụ: tín hiệu cảm biến gửi interrupt). Nó giúp tiết kiệm CPU vì chỉ chạy khi cần.
+
+1. [Câu gốc]
+
+"Background event is used for runnables that need to be run at background. The operating system will call the mapped runnables to a background event while the core is idle."
+
+[Dịch sang tiếng Việt]
+Sự kiện Background được dùng cho các Runnable chạy nền. Hệ điều hành sẽ gọi Runnable này khi CPU rảnh.
+
+[Giải thích như chuyên gia top 1%]
+Đây giống như “idle task”. Nó không có deadline, chỉ chạy khi CPU không bận. Ví dụ: ghi log, kiểm tra chẩn đoán nhẹ.
+
+1. [Câu gốc]
+
+"Operation Invoked event is used on the server side of a client server communication."
+
+[Dịch sang tiếng Việt]
+Sự kiện Operation Invoked được dùng ở phía server trong mô hình client-server.
+
+[Giải thích như chuyên gia top 1%]
+Nghĩa là khi Client gọi một hàm server (ví dụ: GetSpeed()), RTE sẽ sinh ra một Operation Invoked Event, kích hoạt Runnable của server để thực thi.
+
+1. [Câu gốc]
+
+"The asynchronous server result event is raised when an asynchronous server call is finished."
+
+[Dịch sang tiếng Việt]
+Sự kiện Asynchronous Server Result xảy ra khi một lời gọi server bất đồng bộ được hoàn tất.
+
+[Giải thích như chuyên gia top 1%]
+Nếu Client gọi async (không chờ), khi Server xử lý xong, RTE sẽ tạo sự kiện này để báo cho Client nhận kết quả. Giúp tránh block CPU.
+
+1. [Câu gốc]
+
+"Data Write complete or a Data Send complete event is associated with a provider port."
+
+[Dịch sang tiếng Việt]
+Sự kiện Data Write Complete hoặc Data Send Complete gắn với cổng Provider.
+
+[Giải thích như chuyên gia top 1%]
+Khi một SWC cung cấp dữ liệu (Provider) gửi dữ liệu đi thành công, sự kiện này sẽ được kích hoạt. Nó đảm bảo các xử lý phụ thuộc dữ liệu chỉ xảy ra sau khi dữ liệu đã thật sự được gửi.
+
+1. [Câu gốc]
+
+"The data receive event or data receive error event is associated with a receiver port and it is triggered when a data is received on a port or when there was an error during reception."
+
+[Dịch sang tiếng Việt]
+Sự kiện Data Receive hoặc Data Receive Error gắn với cổng Receiver, được kích hoạt khi có dữ liệu đến hoặc khi có lỗi khi nhận dữ liệu.
+
+[Giải thích như chuyên gia top 1%]
+Điều này tối ưu hóa runtime: Runnable không phải polling liên tục, mà chỉ chạy khi có dữ liệu thực sự (event-driven). Nếu lỗi nhận, ta cũng có thể xử lý ngay.
+
+1. [Câu gốc]
+
+"The Mode Switch event is used whenever there was a state change in a particular mode and to trigger the associated runnable when it occurs."
+
+[Dịch sang tiếng Việt]
+Sự kiện Mode Switch được dùng khi có thay đổi trạng thái trong một Mode, để kích hoạt Runnable tương ứng.
+
+[Giải thích như chuyên gia top 1%]
+Ví dụ: Hệ thống đèn xe có các mode: OFF, ON, AUTO. Khi chuyển từ OFF → ON, một Runnable cấu hình sẵn sẽ được gọi để bật đèn. Đây là cơ chế event-driven dựa trên trạng thái hệ thống.
+
+👉 Tổng kết ngắn gọn:
+
+Init Event → chạy 1 lần duy nhất khi khởi động.
+
+Timing Event → chạy theo chu kỳ định trước.
+
+Trigger Event → chạy khi có trigger bên ngoài.
+
+Background Event → chạy khi CPU rảnh.
+
+Client-Server Events → liên quan đến lời gọi hàm client/server.
+
+Data Events → liên quan đến gửi/nhận dữ liệu.
+
+Mode Events → liên quan đến thay đổi trạng thái hệ thống.
