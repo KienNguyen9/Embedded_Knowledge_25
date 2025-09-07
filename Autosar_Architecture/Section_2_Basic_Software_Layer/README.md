@@ -991,3 +991,4 @@ ARXML định nghĩa: Ports, Interfaces, Runnables, Events, Internal Behavior, I
 RTE tạo header (RTE_<SWC>.h) → nối 2 phần này lại.
 
 Cuối cùng, SWC phải tuân theo AUTOSAR Standard Templates để dễ tích hợp.
+
