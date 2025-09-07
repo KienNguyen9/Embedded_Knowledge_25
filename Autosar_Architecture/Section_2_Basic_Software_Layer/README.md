@@ -845,3 +845,149 @@ Client-Server Events → liên quan đến lời gọi hàm client/server.
 Data Events → liên quan đến gửi/nhận dữ liệu.
 
 Mode Events → liên quan đến thay đổi trạng thái hệ thống.
+
+
+# 7. Application Software Component 
+1. [Câu gốc]
+
+"We are now at the end of looking at the main blocks and concepts of an application software component. To summarize or put all things together we have learned so far, we will see how a software component is structured."
+
+2. [Dịch]
+“Chúng ta đã đi đến phần cuối khi tìm hiểu các khối chính và khái niệm của một Application Software Component. Để tổng kết và ghép tất cả lại với nhau, chúng ta sẽ xem một Software Component được cấu trúc như thế nào.”
+
+3. [Giải thích]
+Đây là phần tổng kết, tác giả chuẩn bị ghép tất cả các khối đã học (ports, runnables, events, behavior…) để cho thấy bức tranh toàn diện về cấu trúc của một SWC.
+
+1. [Câu gốc]
+
+"While we say we have to design a software component, it is the C file that has the functionality and the configuration ARXML file that will associate it. The C file and the XML configuration together represents a software component."
+
+2. [Dịch]
+“Khi nói thiết kế một Software Component, thì file C chứa chức năng thực thi, còn file ARXML chứa cấu hình liên kết. Hai file này kết hợp lại mới tạo thành một Software Component.”
+
+3. [Giải thích]
+
+C file = code thật, implement logic.
+
+ARXML = metadata/config, mô tả để AUTOSAR RTE và OS biết cách gọi code.
+👉 Một SWC không bao giờ chỉ có code; nó luôn cần config ARXML đi kèm.
+
+1. [Câu gốc]
+
+"Configurations are structured in Autosar packages… The port configuration contains the list of all ports that are applicable for this software component."
+
+2. [Dịch]
+“Các cấu hình được tổ chức trong AR-Packages. Một Application SWC sẽ có: (1) cấu hình port – chứa danh sách tất cả các cổng thuộc về SWC.”
+
+3. [Giải thích]
+
+Port configuration là nơi định nghĩa SWC giao tiếp với bên ngoài qua Sender-Receiver hoặc Client-Server.
+
+Không giới hạn số lượng port, nhưng mỗi port chỉ gắn với 1 interface duy nhất.
+
+1. [Câu gốc]
+
+"The second is the internal behavior, which represents or describes the characteristics of the software component. The configurations within this mainly deals with the runtime environment."
+
+2. [Dịch]
+“Khối thứ hai là Internal Behavior, mô tả đặc điểm hoạt động của SWC. Phần này chủ yếu liên quan đến cách SWC chạy trong Runtime Environment (RTE).”
+
+3. [Giải thích]
+
+Internal Behavior = “bản thiết kế hoạt động nội bộ” của SWC.
+
+Nó gồm:
+
+Events (thời điểm nào gọi)
+
+Runnables (hàm nào được gọi)
+
+Instance Memories (biến nội bộ, constants, parameters)
+
+1. [Câu gốc]
+
+"The next is the software component implementation, where we describe the properties of the software, like the vendor who designed the module, the way the software is shared as source or objects, the resource consumption of the module, etc."
+
+2. [Dịch]
+“Khối tiếp theo là Software Component Implementation, mô tả các thuộc tính của phần mềm như: vendor thiết kế, cách phân phối (source/object), mức tiêu thụ tài nguyên, v.v.”
+
+3. [Giải thích]
+
+Đây là metadata phục vụ quản lý và tích hợp hệ thống (System integrator cần biết vendor nào viết, SWC nặng nhẹ ra sao).
+
+Không ảnh hưởng trực tiếp đến logic code, nhưng quan trọng với quản lý dự án AUTOSAR.
+
+1. [Câu gốc]
+
+"An internal behavior … has the events and Runnable configured within. Each Runnable should define its internal properties like which port it's accessing… Finally, the runnables will be mapped to the events and this defines how the runnable should be called by the operating system."
+
+2. [Dịch]
+“Trong Internal Behavior:
+
+Có các Event và Runnable được cấu hình.
+
+Mỗi Runnable cần định nghĩa thuộc tính (truy cập port nào, xử lý gì).
+
+Cuối cùng, Runnable sẽ được ánh xạ (map) với Event → OS biết khi nào và cách nào gọi Runnable.”
+
+3. [Giải thích]
+
+Runnable = function trong C file.
+
+Event = cách kích hoạt Runnable (Init, Timing, DataReceived, ModeSwitch, …).
+
+Map Runnable ↔ Event = cầu nối giữa code (C) và hệ thống (RTE + OS).
+
+1. [Câu gốc]
+
+"To link the source with a configuration that we made, we'll have to include an RTE header with a format RTE_ + Software Component Name + .h"
+
+2. [Dịch]
+“Để liên kết code C với cấu hình ARXML, ta phải include file header RTE với format: RTE_<Tên SWC>.h.”
+
+3. [Giải thích]
+
+RTE header này do tool generate dựa trên ARXML.
+
+Bên trong có API để đọc/ghi data, gọi server, xử lý event.
+
+Nếu không include đúng header → SWC không kết nối được với RTE.
+
+1. [Câu gốc]
+
+"Please note that we have to configure a runnable in the ARXML for each function we write in the C file."
+
+2. [Dịch]
+“Lưu ý: mỗi function trong C file phải có một runnable tương ứng trong ARXML.”
+
+3. [Giải thích]
+
+Nếu code thêm 1 function nhưng quên config runnable → OS không bao giờ gọi function đó.
+
+Đây là rule cực quan trọng trong AUTOSAR SWC design.
+
+1. [Câu gốc]
+
+"The Autosar standard specification for the application component can be found in this pdf from the standards… methodology and templates… software component template specification…"
+
+2. [Dịch]
+“Tài liệu tiêu chuẩn AUTOSAR về Application Component có sẵn trong file PDF: Methodology and Templates. Bên trong có template SWC Specification để tham khảo.”
+
+3. [Giải thích]
+
+AUTOSAR cung cấp template chính thức → mọi OEM, supplier đều dựa theo.
+
+Đây là “kim chỉ nam” khi thiết kế SWC.
+
+Các phần: Ports, Interfaces, Internal Behavior, Runnables, Events… đều được mô tả chuẩn.
+
+📌 Tóm gọn cho Kiên:
+Một SWC = C file (logic) + ARXML (cấu hình).
+
+C file chứa các hàm.
+
+ARXML định nghĩa: Ports, Interfaces, Runnables, Events, Internal Behavior, Implementation Info.
+
+RTE tạo header (RTE_<SWC>.h) → nối 2 phần này lại.
+
+Cuối cùng, SWC phải tuân theo AUTOSAR Standard Templates để dễ tích hợp.
