@@ -992,3 +992,165 @@ RTE tạo header (RTE_<SWC>.h) → nối 2 phần này lại.
 
 Cuối cùng, SWC phải tuân theo AUTOSAR Standard Templates để dễ tích hợp.
 
+# 8. Run time environment
+## 8.1 Run time environment cơ bản
+
+1. [Câu gốc]
+
+"RTE or the runtime environment is the heart of the Autosar architecture."
+
+2. [Dịch]
+“RTE hay Runtime Environment là trái tim của kiến trúc AUTOSAR.”
+
+3. [Giải thích]
+
+RTE = trung tâm điều phối trong AUTOSAR, giống như bộ não giao tiếp.
+
+Không có RTE thì SWC không thể nói chuyện với nhau, cũng không thể giao tiếp với BSW.
+
+1. [Câu gốc]
+
+"All interfaces that are communicating between application components or between application and base software should go through RTE. There is no by passing of the RTE layer in Autosar in any case."
+
+2. [Dịch]
+“Tất cả các interface giao tiếp giữa Application Components, hoặc giữa Application với Base Software đều phải đi qua RTE. Trong AUTOSAR tuyệt đối không có chuyện bypass RTE.”
+
+3. [Giải thích]
+
+Rule vàng: mọi communication → qua RTE.
+
+Điều này đảm bảo tính chuẩn hóa và độc lập: SWC không cần biết SWC khác nằm ở đâu, trên core nào, hay ECU nào.
+
+1. [Câu gốc]
+
+"The Autosar runtime environment acts as a system level communications center for Inter and Intra ECU information exchange…"
+
+2. [Dịch]
+“RTE đóng vai trò trung tâm giao tiếp ở cấp hệ thống cho việc trao đổi thông tin Intra-ECU (trong cùng ECU) và Inter-ECU (giữa các ECU khác nhau).”
+
+3. [Giải thích]
+
+Intra-ECU: SWC1 ↔ SWC2 trong cùng 1 ECU.
+
+Inter-ECU: SWC1 ECU-A ↔ SWC2 ECU-B (qua COM stack, nhưng RTE vẫn là điểm kết nối trong SWC).
+
+1. [Câu gốc]
+
+"The RTE is the runtime representation of the Virtual function bus (VFB) for a specific ECU."
+
+2. [Dịch]
+“RTE là phiên bản runtime của Virtual Function Bus (VFB) cho một ECU cụ thể.”
+
+3. [Giải thích]
+
+VFB: khái niệm trừu tượng → tất cả SWC nhìn nhau như thể cùng ngồi trên một “bus ảo”.
+
+RTE: triển khai thực tế VFB trên từng ECU.
+
+1. [Câu gốc]
+
+"RTE layer plays the key roles for the advantages of Autosar architecture… flexibility and freedom…"
+
+2. [Dịch]
+“RTE mang lại lợi thế chính cho AUTOSAR: linh hoạt và tự do trong việc đặt SWC ở bất kỳ ECU hoặc core nào.”
+
+3. [Giải thích]
+
+Không cần thay đổi code khi SWC di chuyển giữa ECU khác nhau.
+
+RTE đảm bảo mapping communication phù hợp.
+
+Hỗ trợ multi-core, multi-partition một cách tối ưu.
+
+1. [Câu gốc]
+
+"RTE can also take care of message consistency while passing interfaces across applications…"
+
+2. [Dịch]
+“RTE cũng đảm bảo tính nhất quán thông điệp khi truyền interface giữa các ứng dụng, bất kể core nào hay độ ưu tiên nào.”
+
+3. [Giải thích]
+
+Ví dụ: nếu SWC1 gửi data nhanh, SWC2 đọc chậm → RTE vẫn đảm bảo data không bị xung đột.
+
+Đây chính là phần khó khi thiết kế hệ thống real-time multicore.
+
+1. [Câu gốc]
+
+"Apart from taking care of passing messages across components, RTE is also responsible to take care of the scheduling of Runnables as well."
+
+2. [Dịch]
+“Bên cạnh việc truyền thông điệp, RTE còn chịu trách nhiệm lập lịch gọi Runnables.”
+
+3. [Giải thích]
+
+Khi Event xảy ra (Timing, DataReceived, ModeSwitch…), RTE sẽ kích hoạt Runnable tương ứng.
+
+Đây là cách SWC được chạy đúng thời điểm, đúng logic.
+
+1. [Câu gốc]
+
+"To summarize, the responsibilities of RTE…"
+
+2. [Dịch]
+“Tóm lại, trách nhiệm của RTE:
+
+Giao tiếp giữa SWC.
+
+Đảm bảo nhất quán dữ liệu.
+
+Lập lịch Runnables theo Event đã cấu hình.”
+
+3. [Giải thích]
+Đây là 3 trụ cột: Communication – Consistency – Scheduling.
+
+1. [Câu gốc]
+
+"The RTE layer specification can be referred in the standard specification from Autosar… download RTE.zip"
+
+2. [Dịch]
+“Specification của RTE có sẵn trong chuẩn AUTOSAR (Classic Platform 4.4). Có thể tải về file RTE.zip gồm: (1) Requirement Spec, (2) Software Spec.”
+
+3. [Giải thích]
+
+Requirement Spec: nói RTE phải làm gì.
+
+Software Spec: nói RTE được thiết kế thế nào.
+
+Khi dev, ta tập trung vào Software Spec, nhất là phần API.
+
+1. [Câu gốc]
+
+"The next major section would be the RTE API… like RTE_Read API…"
+
+2. [Dịch]
+“Phần quan trọng nhất là RTE API (mục 5.6 trong spec). Ví dụ: RTE_Read() dùng để đọc dữ liệu từ port.”
+
+3. [Giải thích]
+
+API trong RTE có prefix chuẩn (RTE_...) → phần còn lại dựa vào cấu hình ARXML.
+
+Các nhóm API chính:
+
+Sender/Receiver (RTE_Read, RTE_Write)
+
+Client/Server (RTE_Call, RTE_Result)
+
+Đây là “ngôn ngữ” để SWC giao tiếp thông qua RTE.
+
+📌 Tóm tắt cho Kiên:
+
+RTE = trái tim AUTOSAR.
+
+Chức năng chính:
+
+Kênh giao tiếp (Inter/Intra ECU).
+
+Đảm bảo dữ liệu nhất quán.
+
+Lập lịch Runnables dựa trên Events.
+
+RTE chính là hiện thực hóa VFB → cho phép SWC di động, tái sử dụng, đặt trên bất kỳ ECU/core nào.
+
+Dev AUTOSAR chủ yếu làm việc với RTE APIs (5.6) để đọc/ghi data, gọi server.
+
