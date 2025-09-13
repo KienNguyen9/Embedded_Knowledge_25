@@ -1380,3 +1380,421 @@ Tham số truyền tuân thủ IN/OUT/INOUT.
 RTE là cầu nối: Client gọi → RTE → Server Runnable.
 
 Trả về status để kiểm tra thành công.
+
+## 8.4 RTE - Communication
+1.
+Câu gốc:
+"We shall look into how RTE handles Port communications in more detail."
+
+Dịch:
+Chúng ta sẽ tìm hiểu chi tiết hơn cách RTE xử lý việc giao tiếp qua các Port.
+
+2.
+Câu gốc:
+"Let's take a typical example that we saw before to understand how the RTE does the interface communications."
+
+Dịch:
+Hãy lấy một ví dụ điển hình mà chúng ta đã thấy trước đó để hiểu cách RTE thực hiện giao tiếp qua interface.
+
+3.
+Câu gốc:
+"Here we have two software components and both needs to communicate with each other, and this happens through RTE."
+
+Dịch:
+Ở đây chúng ta có hai software component và cả hai cần giao tiếp với nhau, điều này được thực hiện thông qua RTE.
+
+4.
+Câu gốc:
+"Component-1 (SWC1) has a provider to write its data out and component-2 (SWC2) has a receiver port to read this data."
+
+Dịch:
+Component-1 (SWC1) có một provider port để ghi dữ liệu ra, và Component-2 (SWC2) có một receiver port để đọc dữ liệu đó.
+
+5.
+Câu gốc:
+"Now, the C file of Component-1 will contain a runnable or a function that somehow calculates the data to be sent and writes it to RTE through its Autosar interface or through an RTE API."
+
+Dịch:
+Trong file C của Component-1 sẽ có một runnable hoặc một hàm tính toán dữ liệu cần gửi và ghi dữ liệu này vào RTE thông qua Autosar interface hoặc RTE API.
+
+6.
+Câu gốc:
+"That is RTE_Write '_' and the port name followed with the data prototype name as per the standards that we saw before."
+
+Dịch:
+Cụ thể, hàm này có dạng RTE_Write_<PortName>_<DataPrototypeName> theo đúng chuẩn mà chúng ta đã thấy trước đó.
+
+7.
+Câu gốc:
+"Now, from the RTE side, RTE defines these APIs and has the functional implementation for this."
+
+Dịch:
+Từ phía RTE, RTE định nghĩa các API này và cài đặt chức năng cho chúng.
+
+8.
+Câu gốc:
+"RTE will define an interface from its side and take a copy of this interface, that component-1 has provided."
+
+Dịch:
+RTE sẽ định nghĩa một interface riêng từ phía nó và giữ một bản sao dữ liệu của interface mà Component-1 đã cung cấp.
+
+Giải thích:
+Điểm then chốt là SWC1 không truyền dữ liệu trực tiếp sang SWC2. Thay vào đó, dữ liệu đi vào một buffer nội bộ của RTE. Điều này cho phép decoupling (giảm phụ thuộc) giữa các component và dễ dàng thay thế component khác sau này.
+
+9.
+Câu gốc:
+"Note that the interface that RTE has created, which we have named it as 'value', should not be accessed by other applications directly."
+
+Dịch:
+Lưu ý rằng interface mà RTE đã tạo ra (tạm gọi là “value”) không được phép ứng dụng khác truy cập trực tiếp.
+
+Giải thích:
+Chỉ RTE mới có quyền truy cập buffer nội bộ. Các component khác phải dùng RTE_Read hoặc RTE_Write. Điều này đảm bảo data consistency và encapsulation.
+
+10.
+Câu gốc:
+"Only the RTE should access this interface directly and the other layers should use the RTE APIs to Get or Set the value of this interface."
+
+Dịch:
+Chỉ RTE mới được phép truy cập trực tiếp interface này, các layer khác phải dùng API của RTE để lấy hoặc ghi giá trị.
+
+11.
+Câu gốc:
+"Now coming to the Receiver side at Component-2."
+
+Dịch:
+Bây giờ hãy đến phía Receiver tại Component-2.
+
+12.
+Câu gốc:
+"Here we have a receiver port, to read the data sent from Component one."
+
+Dịch:
+Ở đây ta có một receiver port, để đọc dữ liệu được gửi từ Component-1.
+
+13.
+Câu gốc:
+"The C file of the Component-2 will have Runnable function to read this and again here, we use the Autosar interface to get the data from RTE."
+
+Dịch:
+File C của Component-2 sẽ có một runnable function để đọc dữ liệu này, và cũng sẽ dùng Autosar interface để lấy dữ liệu từ RTE.
+
+14.
+Câu gốc:
+"RTE implements the Read API to copy its intermediate interface data to the pointer that was passed to the application."
+
+Dịch:
+RTE cài đặt Read API để sao chép dữ liệu trung gian từ buffer của nó sang con trỏ được truyền vào bởi ứng dụng.
+
+15.
+Câu gốc:
+"This is how RTE acts as an abstraction layer and takes care of the message copies between software components."
+
+Dịch:
+Đây chính là cách RTE hoạt động như một lớp trừu tượng, xử lý việc sao chép thông điệp giữa các software component.
+
+16.
+Câu gốc:
+"You might think, why make the software too complex with this architecture?"
+
+Dịch:
+Bạn có thể nghĩ: tại sao phải làm phần mềm phức tạp như vậy với kiến trúc này?
+
+17.
+Câu gốc:
+"A question might come that why not an interface can directly be copied from one module to another, and it's easy if you don't go through Autosar's RTE layer."
+
+Dịch:
+Có thể đặt câu hỏi rằng: tại sao không cho phép copy trực tiếp dữ liệu từ module này sang module khác, sẽ đơn giản hơn thay vì đi qua lớp RTE của Autosar?
+
+Giải thích:
+Trước AUTOSAR, các module thường gọi trực tiếp hoặc chia sẻ biến global. Cách này nhanh nhưng gây ra high coupling, khó tái sử dụng, và khó kiểm thử. AUTOSAR bắt buộc dùng RTE để đảm bảo tính module hóa và dễ dàng thay thế.
+
+18.
+Câu gốc:
+"And when the complexity of the software is increasing in an automotive industry that we have nearly thousands of components in a system, it's not manageable with this older way."
+
+Dịch:
+Với độ phức tạp ngày càng tăng của phần mềm trong ngành ô tô, nơi có hàng ngàn component trong một hệ thống, cách làm cũ là không thể quản lý được.
+
+19.
+Câu gốc:
+"Let's assume that the customer buys the functionality of software component-2, from a vendor and is not satisfied with it."
+
+Dịch:
+Giả sử khách hàng mua chức năng của software component-2 từ một nhà cung cấp nhưng không hài lòng với nó.
+
+20.
+Câu gốc:
+"Now, with Autosar it's just easy plug and play for the customer."
+
+Dịch:
+Nhờ Autosar, khách hàng có thể thay thế một cách dễ dàng theo kiểu plug-and-play.
+
+21.
+Câu gốc:
+"The read API is completely derived from its own port configuration and that will be the same, and RTE will adapt itself based on this new component configuration."
+
+Dịch:
+API đọc được sinh ra hoàn toàn từ cấu hình port của component, và nó sẽ giữ nguyên. RTE sẽ tự điều chỉnh dựa trên cấu hình component mới.
+
+Giải thích:
+Điểm mạnh là API không đổi, dù anh thay vendor khác. RTE tự động mapping lại. Đây là plug-and-play thực sự.
+
+22.
+Câu gốc:
+"If we have not here by exchanging components, only RTE layer needs to be adapted and the rest of the software remains the same."
+
+Dịch:
+Khi thay thế component, chỉ lớp RTE cần điều chỉnh, còn các phần mềm khác vẫn giữ nguyên.
+
+23.
+Câu gốc:
+"From the advantages of Autosar that we saw in the beginning all are satisfied with this RTE layer A software component once developed can be reused across different systems and we get the best software from the market without any compatibility issues."
+
+Dịch:
+Từ những lợi ích của Autosar mà ta đã thấy, tất cả đều được đáp ứng nhờ lớp RTE. Một software component khi đã phát triển có thể tái sử dụng ở nhiều hệ thống khác nhau, và ta có thể lấy phần mềm tốt nhất từ thị trường mà không lo vấn đề tương thích.
+
+24.
+Câu gốc:
+"Handling is easy from the application developer site since RTE takes the burden to handle the complex part of ensuring message consistency etc.."
+
+Dịch:
+Việc phát triển ứng dụng trở nên dễ dàng vì RTE gánh vác phần phức tạp như đảm bảo tính nhất quán của thông điệp.
+
+25.
+Câu gốc:
+"A developed software component can be reused in different systems as well, and this ensures faster to market."
+
+Dịch:
+Một software component đã phát triển có thể tái sử dụng trong nhiều hệ thống khác nhau, giúp sản phẩm ra thị trường nhanh hơn.
+
+✅ Như vậy em đã dịch toàn bộ. Các câu khó đã được giải thích thêm, tập trung vào:
+
+Vì sao không cho phép truy cập trực tiếp buffer của RTE.
+
+Vì sao không cho copy trực tiếp dữ liệu giữa các module.
+
+Lợi ích plug-and-play khi thay component.
+
+## 8.4 RTE - Scheduling of Events  
+1.
+Câu gốc:
+"We saw that RTE does the scheduling as well, along with interface communications."
+
+Dịch:
+Chúng ta đã thấy rằng RTE không chỉ thực hiện giao tiếp qua interface mà còn chịu trách nhiệm scheduling (lập lịch) nữa.
+
+2.
+Câu gốc:
+"We shall see with the same example on how RTE takes care of this."
+
+Dịch:
+Chúng ta sẽ tiếp tục với ví dụ trước đó để xem RTE xử lý việc này như thế nào.
+
+3.
+Câu gốc:
+"While we already saw that every Runnable should be mapped to an event."
+
+Dịch:
+Chúng ta đã biết rằng mỗi Runnable cần được ánh xạ (mapped) tới một event.
+
+4.
+Câu gốc:
+"Let's consider that the Function_1 is mapped to a timing event."
+
+Dịch:
+Hãy giả sử Function_1 được ánh xạ tới một timing event (sự kiện theo chu kỳ thời gian).
+
+5.
+Câu gốc:
+"And for Function_2 we will consider that we need to run it only when there is new data and so we will map this to a Data Received Event."
+
+Dịch:
+Còn Function_2, ta chỉ muốn chạy khi có dữ liệu mới, nên nó sẽ được ánh xạ tới một Data Received Event (sự kiện nhận dữ liệu).
+
+6.
+Câu gốc:
+"Using this example, we will see how RTE handles this scheduling of both these events."
+
+Dịch:
+Với ví dụ này, ta sẽ xem RTE xử lý việc scheduling cho cả hai loại event này ra sao.
+
+7.
+Câu gốc:
+"There is an RTE configuration that's needed separately for this scheduling activity, which will be done at the final stages of the development process in a system development."
+
+Dịch:
+Để scheduling hoạt động, cần có một cấu hình RTE riêng, được thực hiện ở giai đoạn cuối cùng của quá trình phát triển hệ thống.
+
+Giải thích:
+Ở AUTOSAR, việc mapping giữa Runnable ↔ Event ↔ OS Task được cấu hình trong System Description (ARXML), chứ không viết tay trong code. Đây là cách AUTOSAR tự động sinh code scheduling.
+
+8.
+Câu gốc:
+"It's called the Event To Task mapping in the RTE configuration, together with the OS task container configuration in the OS ECU configurations."
+
+Dịch:
+Cấu hình này gọi là Event To Task mapping trong RTE configuration, đi kèm với cấu hình OS task container trong OS ECU configuration.
+
+Giải thích:
+
+Event To Task mapping: ánh xạ từng Event (Timing, DataReceived, ModeSwitch…) vào Task cụ thể.
+
+OS task container: định nghĩa task ở mức OS (ví dụ AUTOSAR OS: OSEK/VDX).
+
+9.
+Câu gốc:
+"We will not get deep into this, but we assume here that the OS was already configured to have two tasks called 'CalcTask' and 'ReadTask'."
+
+Dịch:
+Ta sẽ không đi sâu vào chi tiết, mà giả sử OS đã được cấu hình sẵn hai task tên là CalcTask và ReadTask.
+
+10.
+Câu gốc:
+"To continue, we do that event to task mapping configuration where we map the timing event from component-1 to the CalcTask and the data received went to the ReadTask."
+
+Dịch:
+Tiếp theo, ta thực hiện ánh xạ event vào task: ánh xạ timing event từ component-1 vào CalcTask, còn data received event thì vào ReadTask.
+
+11.
+Câu gốc:
+"Now, based on this configuration to RTE, RTE will create task bodies for each and every individual task that we have configured."
+
+Dịch:
+Dựa trên cấu hình này, RTE sẽ sinh ra phần thân (task bodies) cho từng task mà ta đã cấu hình.
+
+12.
+Câu gốc:
+"Here RTE will add a prefix called RTE_Task for every task it creates and then It follows with the name of the task from our configuration."
+
+Dịch:
+RTE sẽ thêm tiền tố RTE_Task cho mỗi task được tạo, rồi nối thêm tên task theo cấu hình.
+
+13.
+Câu gốc:
+"In our example, since he took the name as CalcTask, the final task that RTE creates is with the name RTE_Task + '_' + CalcTask."
+
+Dịch:
+Trong ví dụ này, vì tên task là CalcTask, nên task mà RTE tạo ra sẽ có tên là RTE_Task_CalcTask.
+
+14.
+Câu gốc:
+"Which will then be further added to the operating system scheduler."
+
+Dịch:
+Task này sau đó sẽ được thêm vào scheduler của hệ điều hành.
+
+15.
+Câu gốc:
+"This is how RTE generates the task names by the definition from the configuration we provide."
+
+Dịch:
+Đây là cách RTE sinh ra tên task dựa trên cấu hình mà chúng ta cung cấp.
+
+16.
+Câu gốc:
+"That definition will contain the mapped runnable, which will be the Function-1 in our case."
+
+Dịch:
+Cấu hình này chứa runnable đã được ánh xạ — trong trường hợp này là Function-1.
+
+17.
+Câu gốc:
+"Here we could see this function called within the body, and this will be triggered periodically based on the timing period configured in the timing event."
+
+Dịch:
+Trong thân task, ta sẽ thấy function này được gọi, và nó sẽ được kích hoạt định kỳ dựa trên chu kỳ thời gian của timing event.
+
+18.
+Câu gốc:
+"Next we will see how RTE handles the data received event configuration."
+
+Dịch:
+Tiếp theo, ta sẽ xem cách RTE xử lý cấu hình Data Received Event.
+
+19.
+Câu gốc:
+"Here we map it to a new task called 'ReadTask'."
+
+Dịch:
+Ở đây, ta ánh xạ nó vào một task mới có tên ReadTask.
+
+20.
+Câu gốc:
+"And like I already mentioned, RTE will create a Task function with name RTE_Task prefix and followed by the task name Read_Task."
+
+Dịch:
+Như đã nói, RTE sẽ tạo ra một Task function với tiền tố RTE_Task, nối thêm tên ReadTask, thành RTE_Task_ReadTask.
+
+21.
+Câu gốc:
+"Since we have mapped the runnable Function-2 to a Data Received Event, RTE will add a flagging mechanism to make sure that this function is called only when some data is received on this port."
+
+Dịch:
+Vì Function-2 được ánh xạ tới một Data Received Event, RTE sẽ thêm cơ chế gắn cờ (flagging mechanism) để đảm bảo function này chỉ được gọi khi có dữ liệu mới đến port đó.
+
+Giải thích:
+
+RTE không chạy Function-2 liên tục. Nó dùng flag nội bộ.
+
+Khi RTE_Write xảy ra ở SWC khác, flag = 1.
+
+RTE_Task_ReadTask kiểm tra flag → nếu có dữ liệu mới thì mới gọi Function-2.
+
+22.
+Câu gốc:
+"We could notice an 'If' condition check added before the call and this will be set at the RTE_Write API. So whenever there is a new data, RTE will set this flag and the coupled Function-2 will be called only then."
+
+Dịch:
+Có một điều kiện if được thêm trước khi gọi function. Cờ này được thiết lập tại API RTE_Write. Vì vậy, bất cứ khi nào có dữ liệu mới, RTE sẽ set flag và khi đó Function-2 mới được gọi.
+
+23.
+Câu gốc:
+"Similar to the Data received event, RTE has an encapsulation mechanism for all the other event types, so it can make sure that the runnables are called in an expected manner as per the event configuration."
+
+Dịch:
+Tương tự Data Received Event, RTE cũng có cơ chế đóng gói (encapsulation mechanism) cho tất cả loại event khác, để đảm bảo runnable được gọi đúng như mong đợi theo cấu hình event.
+
+24.
+Câu gốc:
+"Hope you could understand how RTE takes care of the scheduling of runnables from the application components based on the mapped event types."
+
+Dịch:
+Hy vọng giờ bạn đã hiểu cách RTE xử lý scheduling các runnable từ application component dựa trên event type đã ánh xạ.
+
+25.
+Câu gốc:
+"Having seen these RTE's codes until now, which copies, interfaces, sets flags, calls runnables etc."
+
+Dịch:
+Đến giờ ta đã thấy RTE sinh ra các đoạn code để copy dữ liệu, xử lý interface, đặt cờ, gọi runnable, v.v.
+
+26.
+Câu gốc:
+"I hope there is a new question here on who writes this RTE code or from where this code comes from?"
+
+Dịch:
+Có lẽ lúc này bạn sẽ đặt câu hỏi: ai là người viết các đoạn code RTE này, hoặc code này được tạo ra từ đâu?
+
+Giải thích:
+Câu này dẫn sang chủ đề tiếp theo: RTE code không do developer viết tay, mà được RTE Generator sinh ra từ file cấu hình (ARXML).
+
+27.
+Câu gốc:
+"This is something we'll see next."
+
+Dịch:
+Đây chính là điều mà ta sẽ tìm hiểu tiếp theo.
+
+✅ Em đã dịch toàn bộ và giải thích chỗ khó:
+
+Event ↔ Task mapping trong AUTOSAR.
+
+Cách RTE tạo RTE_Task_*.
+
+Cơ chế flag để runnable chỉ chạy khi có dữ liệu mới.
+
+Gợi mở rằng code RTE được sinh tự động, không viết tay.
+
+## 8.4 RTE Generator
