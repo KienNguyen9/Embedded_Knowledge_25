@@ -1,6 +1,6 @@
 Autosar Architecture
 
-# 1: Introduction
+# 1. Introduction
 
 ### 1.1 Intro AutoSar in nowday.
 Autosar is a demanding standard in the automotive industry, which has become a must know knowledge nowadays.
@@ -1307,3 +1307,76 @@ RTE_Read = Đọc dữ liệu từ Receiver Port (truyền biến dạng pointer
 
 Tên hàm được sinh ra từ Port Name + Data Element Name trong ARXML.
 
+## 8.3 RTE APIs : Client-Server Interface
+
+[Câu gốc]: "Let's look at how to use the APIs for client server interface."
+
+[Dịch]: Hãy xem cách sử dụng các API cho client-server interface.
+
+[Giải thích]: Trong AUTOSAR, client-server interface cho phép một SWC (client) gọi hàm/dịch vụ từ một SWC khác (server). API RTE được sinh ra để kết nối giữa hai bên.
+
+[Câu gốc]: "To quickly brush up, a Client Server interface is used to call a function or service from another module."
+
+[Dịch]: Nhắc lại nhanh, Client-Server interface được dùng để gọi một hàm hoặc dịch vụ từ một module khác.
+
+[Giải thích]: Đây là cách chuẩn trong AUTOSAR để một thành phần tái sử dụng dịch vụ của thành phần khác, thay vì viết lại code. Client chỉ gọi, Server thực thi.
+
+[Câu gốc]: "We’ll take the same example ... with an operation called 'Sum'."
+
+[Dịch]: Ta lấy ví dụ với một client-server interface có operation tên là Sum.
+
+[Giải thích]: Đây là minh họa cơ bản: Server cung cấp một hàm Sum(x,y) để tính tổng, Client sẽ gọi nó thông qua API RTE.
+
+[Câu gốc]: "Taking a look at the standards for the API definition for RTE_Call ..."
+
+[Dịch]: Theo chuẩn AUTOSAR, API gọi sẽ có dạng RTE_Call.
+
+[Giải thích]: Mọi API client-server trong AUTOSAR đều bắt đầu bằng Rte_Call, sau đó ghép với tên port và operation.
+
+[Câu gốc]: "The function name is framed from the prefix RTE_Call ... receiver port ... operation name."
+
+[Dịch]: Tên hàm được tạo thành từ: Rte_Call + tên receiver port + tên operation.
+
+[Giải thích]: Client có receiver port, server có provider port. Operation chính là hàm dịch vụ (ví dụ Sum).
+
+[Câu gốc]: "The arguments can be of three types based on direction: IN, OUT, INOUT."
+
+[Dịch]: Tham số có thể là IN, OUT hoặc INOUT.
+
+[Giải thích]:
+
+IN → client truyền giá trị vào server.
+
+OUT → server trả giá trị ra cho client.
+
+INOUT → client truyền tham số vào, server có thể chỉnh sửa rồi trả về.
+
+[Câu gốc]: "For arguments IN ... OUT/INOUT ... pointers so the server can edit them."
+
+[Dịch]: Với IN có thể truyền giá trị trực tiếp. Với OUT/INOUT thì phải truyền tham chiếu hoặc con trỏ để server có thể ghi lại kết quả.
+
+[Giải thích]: Điều này đảm bảo client nhận được dữ liệu mà server tính toán hoặc chỉnh sửa.
+
+[Câu gốc]: "Here the Server function on the provider port side is mapped to this Runnable called 'Sum' and RTE calls this function."
+
+[Dịch]: Hàm của Server ở provider port được ánh xạ đến một Runnable tên Sum, và RTE sẽ gọi runnable đó.
+
+[Giải thích]: RTE sinh code trung gian: client gọi Rte_Call, RTE nội bộ gọi runnable Sum trong server. Đây là “cầu nối” giữa 2 SWC.
+
+[Câu gốc]: "If the operation was successful, then RTE returns back an OK status."
+
+[Dịch]: Nếu thực hiện thành công, RTE sẽ trả về trạng thái OK.
+
+[Giải thích]: Client sẽ biết kết quả gọi hàm có thành công không thông qua return status (ví dụ RTE_E_OK).
+
+👉 Tóm gọn:
+
+API client-server trong AUTOSAR luôn bắt đầu bằng Rte_Call.
+
+Tên API = Rte_Call_<ReceiverPort>_<OperationName>.
+
+Tham số truyền tuân thủ IN/OUT/INOUT.
+
+RTE là cầu nối: Client gọi → RTE → Server Runnable.
+
+Trả về status để kiểm tra thành công.
